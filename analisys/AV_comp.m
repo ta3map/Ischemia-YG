@@ -81,8 +81,19 @@ Relat_AVP_before_SD = ((AVP_BSD - AVP_control)./AVP_control)*100;
 Relat_AVP_after_SD = ((AVP_ASD - AVP_control)./AVP_control)*100;
 
 before_SD_M = median(Relat_AVP_before_SD);
-
 after_SD_M = median(Relat_AVP_after_SD);
+g1g2g3_after = quantile(Relat_AVP_after_SD,3)
+
+%% Significance
+t = 1
+sign_data_1 = Relat_AVP_before_SD;
+sign_data_2 = Relat_AVP_after_SD;
+p = signrank(sign_data_1,sign_data_2);
+significant = p < 0.05;
+test(t).sign_data_2 = sign_data_2;
+test(t).sign_data_1 = sign_data_1;
+test(t).p = p;
+test(t).significant = significant;
 
 %% graph
 % compare control OGD and SD level 
@@ -99,6 +110,7 @@ plot(Param_Time, Relat_AVP_before_SD, 'bo', 'linewidth', linewidth)
 plot(Param_Time + 1, Relat_AVP_after_SD, 'ro', 'linewidth', linewidth)
 
 plot([0 1], [before_SD_M after_SD_M], 'ko--', 'linewidth', linewidth)
+
 set(gca,'XTickLabel',{...
     '-',...
     ['before SD'],...
@@ -106,12 +118,22 @@ set(gca,'XTickLabel',{...
     ['after SD'],...
     '+'})
 
+
 xlim([-0.5 1.5])
 %ylim([-inf max(Relat_AVP_before_SD)*1.2])
 
 title(['relative afferent value responce (AVR)',{},['% before and after SD, n = ' num2str(numel([Results.id]))]])
 ylabel('')
-
+%% BOXPLOT
+f = figure(1);
+f.Position = [18  96  450  670];
+clf
+boxplot([Relat_AVP_before_SD Relat_AVP_after_SD], [Param_Time; Param_Time+1])
+set(gca,'XTickLabel',{...
+    ['before SD'],...
+    ['after SD']})
+title(['relative afferent value responce (AVR)',{},['% before and after SD, n = ' num2str(numel([Results.id]))], ['significance p value = ' num2str(p, 1)]])
+ylabel('%')
 %% save AV_comp
 
 save_folder = 'D:\Neurolab\ialdev\Ischemia YG\Results';
