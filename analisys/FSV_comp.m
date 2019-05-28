@@ -1,11 +1,11 @@
 %% Cell's data comparation - spikes
 
 clear all
-Protocol = readtable('D:\Neurolab\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
+Protocol = readtable('D:\Neurolab\ialdev\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
 
 
 % save directory
-save_folder = 'D:\Neurolab\Ischemia YG\Traces';
+save_folder = 'D:\Neurolab\Data\Ischemia YG\Traces';
 
 
 %Cell's data comparation
@@ -14,7 +14,7 @@ save_folder = 'D:\Neurolab\Ischemia YG\Traces';
 t1list = Protocol.ID(Protocol.CDS==1)'; % ID's with available data
 clear Results
 clear Sds
-i = 0;
+
 
 
  i = 0;
@@ -23,13 +23,13 @@ for t1 = t1list
    id = find(Protocol.ID == t1, 1);
    name = Protocol.name{id};
 %% load parameter
-   load_folder = 'D:\Neurolab\Ischemia YG\Traces';
+   load_folder = 'D:\Neurolab\Data\Ischemia YG\Traces';
    subfolder = 'FSV';
    filename = [num2str(t1) '_' subfolder '_' name '.mat'];
    filepath = [ load_folder '\' subfolder '\' filename];
    Results(i) = load([ load_folder '\' subfolder '\' filename])
 %% load SD times
-   load_folder = 'D:\Neurolab\Ischemia YG\Traces';
+   load_folder = 'D:\Neurolab\Data\Ischemia YG\Traces';
    subfolder = 'SD';
    filename = [num2str(t1) '_' subfolder '_' name '.mat'];
    filepath = [ load_folder '\' subfolder '\' filename];
@@ -146,7 +146,7 @@ MFASD = nanmedian(FSV_FASD);
 MFASD_Time = nanmedian(STT_FASD - SDTime);
 MFASD_Time_iqr = iqr(STT_FASD - SDTime);
 MFASD_Time_text = [num2str(MFASD_Time,3) ' ' char(177) ' '  num2str(MFASD_Time_iqr,3) ' (n = ' num2str(sum(not(isnan(STT_FASD))),3) ')' ];
-
+g1g2g3_after = quantile(STT_FASD - SDTime,3)
 
 % experiments without SD
 NoSD = sum(isnan(SDTime));
@@ -198,7 +198,7 @@ xlim([-2 4])
 
 %% save FSV_comp
 
-save_folder = 'D:\Neurolab\Ischemia YG\Results';
+save_folder = 'D:\Neurolab\ialdev\Ischemia YG\Results';
 subfolder = 'FSV_comp';
 filename = subfolder;%[num2str(t1) '_' subfolder '_' name];
 save([save_folder '\' subfolder '\' filename])
