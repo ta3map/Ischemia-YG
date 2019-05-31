@@ -1,9 +1,8 @@
-function lfp_make_lfp(protocol_path, t1)
-%t1 = 
+function lfp_make_lfp(protocol_path, t1, save_folder)
 %protocol_path = 'D:\Neurolab\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx'
 Protocol = readtable(protocol_path);
 % save directory
-save_folder = 'D:\Neurolab\Ischemia YG\Traces';
+%save_folder = 'D:\Neurolab\Data\Ischemia\Traces';
 
 %% making lfp
     id = find(Protocol.ID == t1, 1);
