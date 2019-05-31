@@ -1,17 +1,18 @@
 
 clear all
 
-Protocol = readtable('D:\Neurolab\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
+Protocol = readtable('D:\Neurolab\ialdev\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
 % save directory
-save_folder = 'D:\Neurolab\Ischemia YG\Traces';
+save_folder = 'D:\Neurolab\Data\Ischemia YG\Traces';
 eachframe = 5;
 s = 1;%save
 
-for t1 = [470]
+for t1 = [491]
     id = find(Protocol.ID == t1, 1);
     name = Protocol.name{id};
     startframe = 1e3;
 v_path = Protocol.IOSFile{id};%'\\IFMB-02-024B-10\Ischemia2\IOS\2018-09-26\2018-09-26_13-46-46.ios'%
+%v_path = '\\IFMB-02-024B-10\Ischemia2\IOS\2019-05-30\2019-05-30_13-13-31.ios';
 [v_data, v_t] = readIOS(v_path, 'startframe', startframe, 'eachframe', eachframe, 'Format', 'Lin', 'resize', 1);
 %%
 baseframe = mean(squeeze(v_data(:,:,:,1:100)),3);
@@ -115,10 +116,10 @@ clf
 hold on
 xlabel('Time, min')
 ylabel('IOS, %')
-ylim([0 max(SignalIOS)])
+ylim([min(SignalIOS) max(SignalIOS)])
 %
 load_folder = 'D:\Neurolab\Ischemia YG\Traces\lfp_trace\';
-
+lost_time =0;
 if  exist([load_folder num2str(t1) '_lfp_trace_' name '.mat']) ==2
 
 load([load_folder num2str(t1) '_lfp_trace_' name '.mat'], 'lfp','hd');
