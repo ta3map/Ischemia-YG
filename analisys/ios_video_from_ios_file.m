@@ -1,18 +1,19 @@
 
 clear all
 
-Protocol = readtable('D:\Neurolab\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
+Protocol = readtable('D:\Neurolab\ialdev\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
 % save directory
-save_folder = 'D:\Neurolab\Ischemia YG\Traces';
+save_folder = 'D:\Neurolab\Data\Ischemia\Traces';
 eachframe = 5;
 s = 1;%save
 
-for t1 = [476]
+for t1 = [491]
     id = find(Protocol.ID == t1, 1);
     name = Protocol.name{id};
-    
+    startframe = 1e3;
 v_path = Protocol.IOSFile{id};%'\\IFMB-02-024B-10\Ischemia2\IOS\2018-09-26\2018-09-26_13-46-46.ios'%
-[v_data, v_t] = readIOS(v_path, 'startframe', 1, 'eachframe', eachframe, 'Format', 'Lin', 'resize', 1);
+%v_path = '\\IFMB-02-024B-10\Ischemia2\IOS\2019-05-30\2019-05-30_13-13-31.ios';
+[v_data, v_t] = readIOS(v_path, 'startframe', startframe, 'eachframe', eachframe, 'Format', 'Lin', 'resize', 1);
 %%
 baseframe = mean(squeeze(v_data(:,:,:,1:100)),3);
 
@@ -27,8 +28,8 @@ baseframe = imgaussfilt(baseframe, sigmac);
 figure(2)
 clf
 colormap(gray)
-imagesc(flipud(baseframe))
- imagesc(flipud(v_data(:,:,1, 1)));
+imagesc((baseframe))
+ imagesc((v_data(:,:,1, 1)));
 %imagesc(flipud(videoframes(:,:,1,1, 1)));
 probe = round(ginput(1))
 
@@ -80,7 +81,7 @@ hold on
 colormap(gray)
 A=axes;
 set(A, 'Visible', 'off','position',[.0 .0 1 1]);
-imshow(flipud(ios_frame));
+imshow((ios_frame));
 axis off
 caxis([-40 40])
 
@@ -113,19 +114,20 @@ Time = (1:numel(SignalIOS))/24
 figure(1)
 clf
 hold on
-plot(Time,SignalIOS)
 xlabel('Time, min')
 ylabel('IOS, %')
-xlim([0 Time(end)])
+ylim([min(SignalIOS) max(SignalIOS)])
 %
 load_folder = 'D:\Neurolab\Ischemia YG\Traces\lfp_trace\';
-
+lost_time =0;
 if  exist([load_folder num2str(t1) '_lfp_trace_' name '.mat']) ==2
 
 load([load_folder num2str(t1) '_lfp_trace_' name '.mat'], 'lfp','hd');
 %t_lfp = (1:numel(lfp))/60e3;
 %plot(t_lfp,100*(lfp./max(lfp)))
 Ylim = ylim;
+
+lost_time = t_lfp(end) - Time(end);
 
 tag_y = Ylim(2);
 for active_tag = 1:size(hd.tags,2)
@@ -139,6 +141,8 @@ text(tag_x, tag_y,tagtext );
 end
 end
 
+plot(Time + lost_time,SignalIOS)
+xlim([0 Time(end)+ lost_time])
 %% save
 if 1
 subfolder = 'ios_trace';
