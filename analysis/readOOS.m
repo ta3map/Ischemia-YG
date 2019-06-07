@@ -34,4 +34,7 @@ fclose(fileID)
 % output format like readIOS function
 v_data = uint16(v_data);
 v_time(:,1) = (1:steps)*dt;
+
+
+disp('OIS data loaded')
 end
