@@ -1,4 +1,4 @@
-function [ios_frame, baseframe, SignalsIOS, Time, pos] = ois_make_ois(v_data, v_t,protocol_path, t1, n_probes, save_folder)
+function [ios_frame, baseframe, SignalsIOS, Time, pos] = ois_make_ois(v_data, v_t, protocol_path, t1, n_probes, save_folder)
 Protocol = readtable(protocol_path);
 id = find(Protocol.ID == t1, 1);
 name = Protocol.name{id};
