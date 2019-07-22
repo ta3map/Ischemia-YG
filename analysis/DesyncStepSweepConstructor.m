@@ -2,13 +2,13 @@
 % load abf
 clear all
 
-Protocol = readtable('D:\Neurolab\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
-t1 = 462;
+Protocol = readtable('D:\Neurolab\ialdev\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
+t1 = 552;
 filepath = Protocol.ABFFile{find(Protocol.ID == t1, 1)};
 name = Protocol.name{find(Protocol.ID == t1, 1)};
 
 % save directory
-save_folder = 'D:\Neurolab\Ischemia YG\Traces';
+save_folder = 'D:\Neurolab\Data\Ischemia YG\Traces';
 
 % get header
 [~, ~,hd]=abfload(filepath, 'start', 1, 'stop', 2);
@@ -145,6 +145,8 @@ hold on
 plot(data_time(inst:end), data(inst:end,1))
 Lines(STT(STT>inst));
 %% - CDS (Cell-data-sweeps)
+someinx = 1
+
 stepInterval = 4000;
 dataEndTime = (data_time(end)/60e3)/cftn;
 afterTrigger =  stepInterval;%500*cftn;
@@ -184,7 +186,7 @@ end
 
 % compare cell data sweeps
 
-someinx = 1
+
 
 subplot(223)
 hold on
@@ -265,26 +267,15 @@ filename = [num2str(t1) '_' subfolder '_' name];
 save([save_folder '\' subfolder '\' filename], 'CDS', 'STT', 'stepInterval', 'trigInterval', 'cftn')
 disp([subfolder ' saved']);
 
+
 %% LOAD saved CDS data
-
-Protocol = readtable('D:\Neurolab\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
-for t1 = [450 451 452 453 454 455 456 457 458 459 460 461 462 469 470]
-filepath = Protocol.ABFFile{find(Protocol.ID == t1, 1)};
-name = Protocol.name{find(Protocol.ID == t1, 1)};
-
 % load directory
-load_folder = 'D:\Neurolab\Ischemia YG\Traces';
+load_folder = 'D:\Neurolab\Data\Ischemia YG\Traces';
 
+% load CDS
 subfolder = 'CDS';
 filename = [num2str(t1) '_' subfolder '_' name];
-load([load_folder '\' subfolder '\' filename], 'CDS', 'STT', 'stepInterval', 'trigInterval', 'cftn')
-disp([subfolder ' loaded']);
-
-% save directory
-save_folder = 'D:\Neurolab\Ischemia YG\Traces';
-
-% get header
-[~, ~,hd]=abfload(filepath, 'start', 1, 'stop', 2);
+load([load_folder '\' subfolder '\' filename]);
 %% - [NSS,...] Step-spike parameters
 % NSS - number of spikes in sweep
 % FSS - first spike slope
@@ -293,34 +284,45 @@ save_folder = 'D:\Neurolab\Ischemia YG\Traces';
 % FSV - first spike value
 % FSOP - First Spike Onset Point
 
-cd('D:\Neurolab\Ischemia\step and stimuli response analysis')
+%cd('D:\Neurolab\Ischemia\step and stimuli response analysis')
 [NSS, FSS, FSA, FSOP, FSHW, FSV] = spikeResponseAnalys(CDS, cftn);
 
+linewidth = 1;
+figure(1)
 clf
 hold on
-plot(STT/cftn/60e3, NSS)
-plot(STT/cftn/60e3, FSS)
-plot(STT/cftn/60e3, FSA)
-plot(STT/cftn/60e3, FSV)
-plot(STT/cftn/60e3, FSHW)
+subplot(411), plot(STT/cftn/60e3, NSS, 'color', 'k', 'linewidth', linewidth), title([[num2str(t1) '_' name],{},'number of spikes'], 'interpreter', 'none'), ylabel('n')
+subplot(412), plot(STT/cftn/60e3, FSS, 'color', 'k', 'linewidth', linewidth), title('first spike''s slope'), ylabel('slope, mV/ms')
+subplot(413), plot(STT/cftn/60e3, FSV, 'color', 'k', 'linewidth', linewidth), title('first spike''s volue'), ylabel('mV')
+subplot(414), plot(STT/cftn/60e3, FSHW/cftn, 'color', 'k', 'linewidth', linewidth), title('first spike''s half-width'), ylabel('ms')
+%plot(STT/cftn/60e3, FSV)
+
 
 % tagging image
+for i = 1:4
+    subplot(4,1,i)
 Ylim = ylim;
-tag_y = Ylim(2) - 0.05*(Ylim(2) - Ylim(1));
+tag_y = Ylim(2) - 0.2*(Ylim(2) - Ylim(1));
 for active_tag = 1:size(hd.tags,2)
     tag_x = (hd.tags(1,active_tag).timeSinceRecStart * hd.fADCSampleInterval/60);
     %tag_y = tag_y + 3*abs(min(lfp)/10);
 
-Lines(tag_x, [], 'k','--', 'Linewidth', 0.8);
+Lines(tag_x, [], [0.5 0.5 0.8] ,'--', 'Linewidth', 1);
+tagtimetext = num2str(hd.tags(1,active_tag).timeSinceRecStart * hd.fADCSampleInterval/60,3), 'min';
+tagtext = [ hd.tags(1,active_tag).comment, {}];
 
-tagtext = [ hd.tags(1,active_tag).comment, {}, num2str(hd.tags(1,active_tag).timeSinceRecStart * hd.fADCSampleInterval/60), 'min'];
-
+if i ==1
 text(tag_x+1, tag_y,tagtext, 'color', 'k');
 end
-xlabel('Time, minutes')
+
+end
 xlim([0 STT(end)/cftn/60e3])
 
-legend('number of spikes', 'first spike slope', 'first spike amplitude','first spike volue','first spike half width' )
+end
+
+
+
+xlabel('Time, minutes')
 %% save  [NSS,...] and graph
 subfolder = 'NSS';
 filename = [num2str(t1) '_' subfolder '_' name];
@@ -347,4 +349,3 @@ saveas(figure(1), [save_folder '\' subfolder '\' filename '.jpg'])
 
 disp([subfolder ' saved']);
 
-end
