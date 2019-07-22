@@ -7,10 +7,10 @@ save_folder = 'D:\Neurolab\Data\Ischemia YG\Traces';
 eachframe = 5;
 s = 1;%save
 
-for t1 = [491]
+for t1 = [446]
     id = find(Protocol.ID == t1, 1);
     name = Protocol.name{id};
-    startframe = 1e3;
+    startframe = 1;
 v_path = Protocol.IOSFile{id};%'\\IFMB-02-024B-10\Ischemia2\IOS\2018-09-26\2018-09-26_13-46-46.ios'%
 %v_path = '\\IFMB-02-024B-10\Ischemia2\IOS\2019-05-30\2019-05-30_13-13-31.ios';
 [v_data, v_t] = readIOS(v_path, 'startframe', startframe, 'eachframe', eachframe, 'Format', 'Lin', 'resize', 1);

@@ -2,9 +2,9 @@
 % load abf
 clear all
 
-t1 = 468
+t1 = 549
 %% 0- start
-Protocol = readtable('D:\Neurolab\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
+Protocol = readtable('D:\Neurolab\ialdev\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
 filepath = Protocol.ABFFile{find(Protocol.ID == t1, 1)};
 name = Protocol.name{find(Protocol.ID == t1, 1)};
 
@@ -20,6 +20,7 @@ save_folder = 'D:\Neurolab\Data\Ischemia YG\Traces';
 %% 1- LBL (baseline for LFP data)
 
 LBLStep = 99988.555;
+LBLStep = 8000;
 filtSize = 5;
 LBL = smooth(medfilt1(data(1:LBLStep:end,1), filtSize), filtSize);
 LBLTime = (0:numel(LBL)-1)*LBLStep;
@@ -277,7 +278,7 @@ ylims = ylim;
 
 subplot(122)
 hold on
-title('afferent value average power, A^2 \times 1e-10 (AVP)')
+title('afferent value (AV)')
 plot(AVP_times, AVP, 'ro', 'linewidth', 2)
 xlim([0 AVP_times(end)]);
 ylims = ylim;

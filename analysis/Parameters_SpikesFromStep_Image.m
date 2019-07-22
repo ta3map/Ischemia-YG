@@ -1,15 +1,15 @@
 
 clear all
-Protocol = readtable('D:\Neurolab\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
+Protocol = readtable('D:\Neurolab\ialdev\Ischemia YG\Protocol\IschemiaYGProtocol.xlsx');
 
-t1 = 463
+t1 = 526
 
 id = find(Protocol.ID == t1, 1);
 name = Protocol.name{id};
 %% load
 
 % load directory
-load_folder = 'D:\Neurolab\Ischemia YG\Sweeps';
+load_folder = 'D:\Neurolab\Data\Ischemia YG\Traces';
 
 % load CDS
 subfolder = 'CDS';
